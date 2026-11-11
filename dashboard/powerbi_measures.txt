@@ -1,0 +1,104 @@
+POWER BI MODEL SETUP
+====================
+Tables loaded (Import mode): vw_order_facts, vw_item_facts, vw_customer_summary
+
+------------------------------------------------------------
+1) CALENDAR TABLE
+   Modeling > New table, paste this, then:
+   - Table tools > Mark as date table > choose [Date]
+   - Add the MonthStart column below (Modeling > New column)
+------------------------------------------------------------
+Calendar =
+CALENDAR(
+    MIN(vw_order_facts[purchase_date]),
+    MAX(vw_order_facts[purchase_date])
+)
+
+MonthStart = DATE(YEAR(Calendar[Date]), MONTH(Calendar[Date]), 1)
+
+
+------------------------------------------------------------
+2) RELATIONSHIPS (Model view, drag to create; all many-to-one, single direction)
+------------------------------------------------------------
+Calendar[Date]  ->  vw_order_facts[purchase_date]
+Calendar[Date]  ->  vw_item_facts[purchase_date]
+vw_customer_summary stays unrelated (it is used on its own page)
+
+
+------------------------------------------------------------
+3) MEASURES
+   Modeling > New measure. Paste one at a time.
+   Tip: put them all in vw_order_facts, or create an empty table
+   called "Measures" to keep them tidy.
+------------------------------------------------------------
+
+Revenue = SUM(vw_order_facts[revenue])
+
+Orders = DISTINCTCOUNT(vw_order_facts[order_id])
+
+Avg Order Value = DIVIDE([Revenue], [Orders])
+
+Avg Review = AVERAGE(vw_order_facts[review_score])
+
+Avg Delivery Days = AVERAGE(vw_order_facts[delivery_days])
+
+Late Orders =
+CALCULATE(COUNTROWS(vw_order_facts), vw_order_facts[is_late] = 1)
+
+Late % =
+DIVIDE(
+    [Late Orders],
+    CALCULATE(COUNTROWS(vw_order_facts), NOT ISBLANK(vw_order_facts[is_late]))
+)
+
+Avg Review (Late) =
+CALCULATE([Avg Review], vw_order_facts[is_late] = 1)
+
+Avg Review (On Time) =
+CALCULATE([Avg Review], vw_order_facts[is_late] = 0)
+
+Review Gap = [Avg Review (On Time)] - [Avg Review (Late)]
+
+Revenue Prev Month =
+CALCULATE([Revenue], DATEADD(Calendar[Date], -1, MONTH))
+
+Revenue MoM % =
+DIVIDE([Revenue] - [Revenue Prev Month], [Revenue Prev Month])
+
+-- Category page (uses vw_item_facts)
+Category Revenue = SUM(vw_item_facts[price])
+
+Category Orders = DISTINCTCOUNT(vw_item_facts[order_id])
+
+Category Avg Review = AVERAGE(vw_item_facts[review_score])
+
+Category % of Revenue =
+DIVIDE(
+    [Category Revenue],
+    CALCULATE([Category Revenue], ALL(vw_item_facts[category]))
+)
+
+-- Retention page (uses vw_customer_summary)
+Customers = DISTINCTCOUNT(vw_customer_summary[customer_unique_id])
+
+Customer % =
+DIVIDE(
+    [Customers],
+    CALCULATE([Customers], ALL(vw_customer_summary[segment]))
+)
+
+Avg Customer Spend = AVERAGE(vw_customer_summary[total_spend])
+
+Segment Revenue = SUM(vw_customer_summary[total_spend])
+
+
+------------------------------------------------------------
+4) CHECKS (build a card for each; they should match your README)
+------------------------------------------------------------
+Revenue (no filters)        -> R$13,221,498
+Avg Review (Late)           -> 2.57
+Avg Review (On Time)        -> 4.29
+Customer % (Repeat)         -> 3.0%
+NOTE: Late Orders will be a little higher than 7,661, because the SQL
+query behind that number only counted orders that also had a review.
+The average scores still match.
