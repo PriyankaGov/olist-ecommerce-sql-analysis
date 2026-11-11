@@ -41,12 +41,6 @@ SQL Server Express, SQL Server Management Studio (SSMS), T-SQL. [Power BI, once 
 README.md
 ```
 
-## Data model
-
-[Insert ERD image here.]
-
-Orders link to customers. Order items link orders to products and sellers. Payments and reviews link back to orders. Every table has a primary key, and foreign keys enforce the links.
-
 ## Data cleaning log
 
 | Issue found | Count | What I did | Effect on results |
