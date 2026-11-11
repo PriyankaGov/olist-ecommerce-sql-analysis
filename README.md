@@ -134,7 +134,8 @@ Volume changes the priority. São Paulo has the most late orders by far (roughly
 
 ## Dashboard
 
-[Insert dashboard screenshots and a link here.]
+<img width="755" height="425" alt="overview" src="https://github.com/user-attachments/assets/897d8589-1e98-4287-a3d8-525d5b1729db" />
+
 
 ## How to run
 
@@ -150,4 +151,4 @@ Requires SQL Server 2017 or later.
 
 Priyanka Govender, Computer and Information Sciences student (Application Development) at The IIE Emeris. I'm building towards data analysis, business analysis and UI/UX design.
 
-[LinkedIn link]
+(https://www.linkedin.com/in/priyankagov22/)
