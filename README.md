@@ -134,7 +134,10 @@ Volume changes the priority. São Paulo has the most late orders by far (roughly
 
 ## Dashboard
 
-<img width="755" height="425" alt="overview" src="https://github.com/user-attachments/assets/897d8589-1e98-4287-a3d8-525d5b1729db" />
+![Overview](images/overview.png)
+![Categories](images/categories.png)
+![Retention](images/retention.png)
+![Delivery](images/delivery.png)
 
 
 ## How to run
